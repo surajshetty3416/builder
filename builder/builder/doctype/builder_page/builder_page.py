@@ -719,8 +719,13 @@ class BuilderPage(WebsiteGenerator):
 			renderer.init_context()
 			return str(renderer.render().data, "utf-8")
 		finally:
-			frappe.local.request = previous_request
 			frappe.local.form_dict = previous_form_dict
+			if previous_request is not None:
+				frappe.local.request = previous_request
+			elif hasattr(frappe.local, "request"):
+				# No request before (a worker, a test) means none after: the router
+				# takes a present-but-None request for a real one and crashes.
+				del frappe.local.request
 
 	def set_custom_font(self, context, font_map):
 		all_user_fonts = get_all_user_fonts()
