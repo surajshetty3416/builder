@@ -147,6 +147,26 @@ class TestBuilderPage(FrappeTestCase):
 		self.assertIs(frappe.local.form_dict, form_dict)
 		self.assertNotIn("prefers_color_scheme", frappe.form_dict)
 
+	def test_previews_a_dynamic_route_page_with_and_without_a_scheme(self):
+		page = insert_page("test-preview-dynamic/<slug>", "Dynamic Preview Content")
+		try:
+			self.assertIn("Dynamic Preview Content", page.get_preview_html())
+			self.assertIn("Dynamic Preview Content", page.get_preview_html(color_scheme="dark"))
+		finally:
+			page.delete()
+
+	def test_get_preview_html_leaves_no_request_behind(self):
+		outer = getattr(frappe.local, "request", None)
+		if hasattr(frappe.local, "request"):
+			del frappe.local.request
+		try:
+			self.page.get_preview_html()
+
+			self.assertFalse(hasattr(frappe.local, "request"))
+		finally:
+			if outer is not None:
+				frappe.local.request = outer
+
 	def test_onload(self):
 		getdoc("Builder Page", self.page.name)
 		self.assertEqual(frappe.response.docs[0].get("__onload").get("builder_path"), "builder")
