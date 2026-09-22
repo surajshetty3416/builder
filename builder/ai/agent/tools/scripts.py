@@ -160,7 +160,7 @@ def deletion_refusal(ctx, script_doc, new_script: str) -> str | None:
 		f"FAILED: this would delete most of '{script_doc.name}' ({before} -> {after} characters "
 		"of code). It existed before this conversation, so most of it is code you did not "
 		"write. Edit it surgically: remove only the lines your own changes added and keep "
-		"everything else. Never replace a script with a stub or a comment. If the user wants "
+		"everything else, never a stub or a comment in its place. If the user wants "
 		"earlier AI turns undone, tell them to use Revert on that turn in the chat, which "
 		"restores the page and its scripts exactly. If they want this code gone, ask them "
 		"to confirm which parts first."
@@ -243,8 +243,8 @@ update_script = Tool(
 	handler=apply_update_script,  # the loop applies script ops server-side
 	description=(
 		"Replace the source code of an existing page script. Pass the FULL new source, "
-		"keeping every part you were not asked to change; never replace a script with a "
-		"stub or a comment. "
+		"keeping every part you were not asked to change; never replace code you did not "
+		"write with a stub or a comment. "
 		"You MUST call get_page_scripts first and copy the exact 'script_name' value "
 		"from that response — do not guess or invent a name. "
 		"Same targeting rule as set_page_script: select by a class/attrs.id hook you add "
