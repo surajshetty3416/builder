@@ -969,9 +969,10 @@ function getPageUsageMessage(count: number) {
 // frappe-ui puts the server's text in `messages`; `message` is just "<url> <exc_type>"
 function getErrorMessage(error: unknown, fallback = __("Something went wrong")): string {
 	if (typeof error !== "object" || !error) return fallback;
-	const first = "messages" in error && Array.isArray(error.messages) ? error.messages[0] : null;
-	const text = typeof first === "string" ? first.replace(/<[^>]*>/g, "").trim() : "";
-	if (text) return text;
+	if ("messages" in error && Array.isArray(error.messages)) {
+		const first = error.messages[0];
+		return (typeof first === "string" && first.replace(/<[^>]*>/g, "").trim()) || fallback;
+	}
 	return ("message" in error && typeof error.message === "string" && error.message) || fallback;
 }
 
